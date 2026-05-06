@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>STRATIS · An Exclusive Evening — June 2, 2026</title>
+<meta name="description" content="Demo. Dinner. A sneak peek into STRATIS — the operating system built to power the future of marketing. The Aster, Hollywood · Tuesday, June 2, 2026." />
+<meta name="theme-color" content="#050807" />
+
+<meta property="og:title" content="STRATIS · An Exclusive Evening" />
+<meta property="og:description" content="Demo. Dinner. A sneak peek into STRATIS. June 2, 2026 · The Aster, Hollywood." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="orb.png" />
+
+<link rel="icon" type="image/png" href="orb.png" />
+<link rel="preload" as="image" href="orb.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #050807;
+    --ink: #ffffff;
+    --ink-soft: rgba(255, 255, 255, 0.78);
+    --ink-mute: rgba(255, 255, 255, 0.55);
+    --teal: #5ee5d0;
+    --purple: #b08cff;
+    --hairline: rgba(255, 255, 255, 0.10);
+    --field-bg: rgba(255, 255, 255, 0.04);
+    --field-border: rgba(255, 255, 255, 0.14);
+    --field-border-focus: rgba(94, 229, 208, 0.55);
+    --radius: 24px;
+    --radius-sm: 12px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: var(--ink);
+    background-color: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100dvh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Orb background — fills the viewport */
+  .bg, .bg-veil {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .bg {
+    background-image: url('orb.png');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: #000;
+    will-change: transform;
+  }
+  /* Subtle vignette + slight darkening so the glass remains readable */
+  .bg-veil {
+    background:
+      radial-gradient(120% 80% at 50% 50%, transparent 0%, rgba(0,0,0,0.25) 60%, rgba(0,0,0,0.55) 100%),
+      linear-gradient(180deg, rgba(0,0,0,0.10), rgba(0,0,0,0.10));
+  }
+
+  /* Page header pinned top-left */
+  .top {
+    position: fixed;
+    top: 22px;
+    left: 24px;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .top .push { color: rgba(255,255,255,0.78); }
+  .top .sep { color: rgba(255,255,255,0.3); }
+  .top .stratis {
+    color: var(--teal);
+    text-shadow: 0 0 22px rgba(94,229,208,0.5);
+  }
+
+  /* Centered viewport-fit container */
+  .stage {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 72px 20px 28px;
+  }
+
+  /* Liquid glass card */
+  .glass {
+    position: relative;
+    width: 100%;
+    max-width: 1080px;
+    border-radius: var(--radius);
+    background: linear-gradient(180deg, rgba(8, 14, 13, 0.42) 0%, rgba(8, 14, 13, 0.32) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(28px) saturate(140%);
+    -webkit-backdrop-filter: blur(28px) saturate(140%);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.10) inset,
+      0 -1px 0 rgba(0, 0, 0, 0.5) inset,
+      0 30px 80px -20px rgba(0, 0, 0, 0.7),
+      0 0 60px rgba(94, 229, 208, 0.06);
+    overflow: hidden;
+  }
+  /* Specular highlight on top edge */
+  .glass::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 6%; right: 6%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+    pointer-events: none;
+  }
+  /* Soft inner glow */
+  .glass::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(500px 220px at 0% 0%, rgba(94, 229, 208, 0.10), transparent 60%),
+      radial-gradient(500px 220px at 100% 100%, rgba(176, 140, 255, 0.10), transparent 60%);
+    pointer-events: none;
+  }
+
+  /* Two-column inside */
+  .grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) 1px minmax(0, 1fr);
+    gap: 36px;
+    padding: 36px 40px;
+    align-items: stretch;
+  }
+  /* Allow grid children to shrink below their content's intrinsic min size */
+  .info, .formcol { min-width: 0; }
+  .grid .vrule {
+    width: 1px;
+    background: linear-gradient(180deg, transparent, rgba(255,255,255,0.14), transparent);
+  }
+
+  /* LEFT — info */
+  .info { display: flex; flex-direction: column; }
+  .eyebrow {
+    color: var(--teal);
+    font-size: 10.5px;
+    letter-spacing: 0.32em;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin: 0 0 12px;
+  }
+  h1 {
+    margin: 0 0 14px;
+    font-size: clamp(30px, 3.4vw, 42px);
+    line-height: 1.04;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    overflow-wrap: break-word;
+    word-break: normal;
+  }
+  .lede, .peek, .meta .value, .secure, .fineprint {
+    overflow-wrap: break-word;
+  }
+  h1 .grad {
+    background: linear-gradient(90deg, #5ee5d0 0%, #6dc6f0 35%, #b08cff 70%, #c79bff 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    color: transparent;
+  }
+  .lede {
+    margin: 0 0 22px;
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    line-height: 1.55;
+    max-width: 44ch;
+  }
+
+  .meta {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 18px 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .meta .row {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 18px;
+    align-items: baseline;
+  }
+  .meta .label {
+    color: var(--teal);
+    font-size: 10px;
+    letter-spacing: 0.26em;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .meta .value {
+    color: var(--ink);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
+  .meta .value .sub {
+    display: block;
+    margin-top: 2px;
+    color: var(--ink-mute);
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .schedule {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 18px 0 0;
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+  .schedule .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(94, 229, 208, 0.06);
+    border: 1px solid rgba(94, 229, 208, 0.22);
+  }
+  .schedule .pill b {
+    color: var(--teal);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .peek {
+    margin-top: auto;
+    padding-top: 18px;
+    color: var(--ink-mute);
+    font-size: 12.5px;
+    line-height: 1.55;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .peek strong {
+    color: var(--ink);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  /* RIGHT — form */
+  .formcol { display: flex; flex-direction: column; }
+  .secure {
+    margin: 0 0 14px;
+    color: var(--ink-mute);
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .form { display: grid; gap: 10px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field { display: flex; flex-direction: column; }
+  .field label {
+    color: var(--ink-mute);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .input, .select {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    background: var(--field-bg);
+    border: 1px solid var(--field-border);
+    border-radius: 10px;
+    color: var(--ink);
+    font: inherit;
+    font-size: 14px;
+    transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .input::placeholder { color: rgba(255,255,255,0.32); }
+  .input:hover, .select:hover { border-color: rgba(255,255,255,0.22); }
+  .input:focus, .select:focus {
+    border-color: var(--field-border-focus);
+    background: rgba(94, 229, 208, 0.06);
+    box-shadow: 0 0 0 3px rgba(94, 229, 208, 0.14);
+  }
+  .select {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'><path d='M1 1.5L6 6.5L11 1.5' stroke='rgba(255,255,255,0.6)' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+  .select option { background: #0a100f; color: var(--ink); }
+
+  .hp {
+    position: absolute !important;
+    left: -10000px !important;
+    width: 1px; height: 1px; overflow: hidden;
+  }
+
+  .submit {
+    margin-top: 6px;
+    width: 100%;
+    height: 50px;
+    border: 0;
+    border-radius: 10px;
+    background: linear-gradient(180deg, #6ef0d8 0%, #3fd0b8 100%);
+    color: #03110f;
+    font: inherit;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: filter 160ms ease, transform 120ms ease, box-shadow 200ms ease;
+    box-shadow:
+      0 0 0 1px rgba(94,229,208,0.45) inset,
+      0 1px 0 rgba(255,255,255,0.45) inset,
+      0 14px 36px -10px rgba(94,229,208,0.45);
+  }
+  .submit:hover { filter: brightness(1.06); }
+  .submit:active { transform: translateY(1px); }
+  .submit:disabled { opacity: 0.65; cursor: not-allowed; filter: saturate(0.8); }
+  .submit .arrow { display: inline-block; margin-left: 6px; }
+
+  .fineprint {
+    margin: 12px 0 0;
+    text-align: center;
+    color: var(--ink-mute);
+    font-size: 11.5px;
+    line-height: 1.55;
+  }
+
+  .status {
+    display: none;
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .status.show { display: block; }
+  .status.error {
+    background: rgba(255,120,120,0.08);
+    border: 1px solid rgba(255,120,120,0.3);
+    color: #ffb4b4;
+  }
+
+  /* Success card replaces the form column */
+  .success {
+    display: none;
+    text-align: center;
+    padding: 16px 8px;
+    margin: auto 0;
+  }
+  .success.show { display: block; }
+  .success .check {
+    width: 56px; height: 56px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: rgba(94,229,208,0.10);
+    border: 1px solid rgba(94,229,208,0.45);
+    display: grid; place-items: center;
+    color: var(--teal);
+    box-shadow: 0 0 30px rgba(94,229,208,0.25);
+  }
+  .success h2 {
+    margin: 0 0 8px;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .success p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    line-height: 1.55;
+    max-width: 320px;
+    margin-inline: auto;
+  }
+
+  /* Footer pinned bottom-center */
+  .foot {
+    position: fixed;
+    left: 0; right: 0;
+    bottom: 14px;
+    text-align: center;
+    z-index: 5;
+    color: var(--ink-mute);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    pointer-events: none;
+  }
+  .foot .brand {
+    color: var(--teal);
+    font-weight: 800;
+    letter-spacing: 0.32em;
+    text-shadow: 0 0 16px rgba(94,229,208,0.3);
+    margin-right: 10px;
+  }
+
+  /* ---------- Responsive ---------- */
+
+  /* Slightly narrower desktop */
+  @media (max-width: 1100px) {
+    .grid { padding: 30px 32px; gap: 28px; }
+    h1 { font-size: clamp(28px, 3.2vw, 36px); }
+  }
+
+  /* Tablet -> single column, top-aligned (allow natural scroll) */
+  @media (max-width: 860px) {
+    .stage {
+      padding: 64px 16px 80px;
+      justify-content: flex-start;
+    }
+    .grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 22px;
+      padding: 26px 24px;
+    }
+    .grid .vrule { display: none; }
+    .meta .row { grid-template-columns: 90px 1fr; }
+    h1 { font-size: clamp(24px, 6vw, 30px); }
+    .lede { font-size: 14px; max-width: none; }
+    .peek { margin-top: 8px; }
+
+    /* Footer flows below the card instead of overlapping */
+    .foot {
+      position: static;
+      margin: 24px auto 16px;
+      padding: 0 16px;
+      max-width: 100%;
+    }
+    .foot .brand { display: block; margin: 0 0 4px; }
+  }
+
+  /* Mobile */
+  @media (max-width: 480px) {
+    .top { top: 16px; left: 18px; font-size: 10.5px; gap: 10px; }
+    .stage { padding: 52px 12px 24px; }
+    .glass { border-radius: 20px; }
+    .grid { padding: 22px 18px; gap: 18px; }
+    h1 { font-size: 26px; line-height: 1.1; }
+    .lede { font-size: 13.5px; }
+    .meta { gap: 12px; padding: 14px 0; }
+    .meta .row { grid-template-columns: 80px 1fr; gap: 12px; }
+    .meta .label { font-size: 9.5px; letter-spacing: 0.22em; }
+    .meta .value { font-size: 14.5px; }
+    .field-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .input, .select { height: 44px; font-size: 14px; }
+    .submit { height: 48px; font-size: 12px; letter-spacing: 0.14em; }
+    .schedule .pill { font-size: 11.5px; padding: 6px 10px; }
+    .peek { font-size: 12px; }
+    .foot { font-size: 10px; }
+  }
+
+  /* Very narrow — stack the name/company/title pairs */
+  @media (max-width: 360px) {
+    .field-row { grid-template-columns: 1fr; gap: 0; }
+    .field-row .field + .field { margin-top: 10px; }
+    .stage { padding: 48px 10px 20px; }
+    .grid { padding: 20px 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg" aria-hidden="true"></div>
+<div class="bg-veil" aria-hidden="true"></div>
+
+<header class="top">
+  <span class="push">PUSH MEDIA</span>
+  <span class="sep">|</span>
+  <span class="stratis">STRATIS</span>
+</header>
+
+<main class="stage">
+  <section class="glass" aria-label="STRATIS RSVP">
+    <div class="grid">
+
+      <!-- LEFT: info -->
+      <div class="info">
+        <p class="eyebrow">An Exclusive Evening</p>
+        <h1>
+          Demo. Dinner.<br />
+          A Sneak Peek into STRATIS.
+        </h1>
+        <p class="lede">
+          Seeing, sensing, reasoning, and responding to the market —
+          and you're among the first to witness it.
+        </p>
+
+        <div class="meta">
+          <div class="row">
+            <span class="label">Location</span>
+            <span class="value">The Aster<span class="sub">1717 Vine St., Hollywood</span></span>
+          </div>
+          <div class="row">
+            <span class="label">Date</span>
+            <span class="value">Tuesday, June 2, 2026</span>
+          </div>
+          <div class="row">
+            <span class="label">Doors</span>
+            <span class="value">5:30 PM</span>
+          </div>
+        </div>
+
+        <div class="schedule">
+          <span class="pill"><b>5:30 PM</b> · Cocktails &amp; Appetizers</span>
+          <span class="pill"><b>6:30 PM</b> · Dinner, Demo &amp; Discussion</span>
+        </div>
+
+        <p class="peek">
+          <strong>SNEAK PEEK</strong> · Be among the first to experience STRATIS — centralized AI intelligence that optimizes execution, maximizes performance, and keeps you ahead of the competition.
+        </p>
+      </div>
+
+      <div class="vrule" aria-hidden="true"></div>
+
+      <!-- RIGHT: form -->
+      <div class="formcol">
+        <p class="secure">Secure Your Seat</p>
+
+        <form id="rsvp-form" class="form" novalidate
+              action="https://formsubmit.co/ajax/jberger@push.agency"
+              method="POST">
+          <input type="hidden" name="_subject" value="STRATIS RSVP — New attendance submission" />
+          <input type="hidden" name="_template" value="table" />
+          <input type="hidden" name="_captcha" value="false" />
+          <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+          <div class="field-row">
+            <div class="field">
+              <label for="firstName">First Name</label>
+              <input class="input" id="firstName" name="First Name" type="text"
+                     placeholder="First" autocomplete="given-name" required />
+            </div>
+            <div class="field">
+              <label for="lastName">Last Name</label>
+              <input class="input" id="lastName" name="Last Name" type="text"
+                     placeholder="Last" autocomplete="family-name" required />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input class="input" id="email" name="Email" type="email"
+                   placeholder="your@email.com" autocomplete="email" required />
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="company">Company</label>
+              <input class="input" id="company" name="Company" type="text"
+                     placeholder="Your company" autocomplete="organization" required />
+            </div>
+            <div class="field">
+              <label for="title">Title</label>
+              <input class="input" id="title" name="Title" type="text"
+                     placeholder="Your title" autocomplete="organization-title" required />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="attendance">Attendance</label>
+            <select class="select" id="attendance" name="Attendance" required>
+              <option value="" disabled selected>Select…</option>
+              <option value="Yes — I'll be there">Yes — I'll be there</option>
+              <option value="Tentative">Tentative</option>
+              <option value="Unable to attend">Unable to attend</option>
+            </select>
+          </div>
+
+          <button class="submit" id="submitBtn" type="submit">
+            <span class="btn-label">Confirm My Attendance</span>
+            <span class="arrow">→</span>
+          </button>
+
+          <div class="status error" id="errorBox" role="alert"></div>
+          <p class="fineprint">Seating is limited · Invitation-only · Details shared only with the host.</p>
+        </form>
+
+        <div class="success" id="successCard" aria-live="polite">
+          <div class="check" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+              <path d="M5 12.5L10 17.5L19 7.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h2>You're on the list.</h2>
+          <p>Thanks for confirming. We've sent your details to the host and will follow up with final event details closer to the date.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<div class="foot">
+  <span class="brand">STRATIS</span>
+  <span>· The Live Marketing Terminal · PUSH Media Inc.</span>
+</div>
+
+<script>
+  (function () {
+    const form = document.getElementById('rsvp-form');
+    const btn = document.getElementById('submitBtn');
+    const btnLabel = btn.querySelector('.btn-label');
+    const errorBox = document.getElementById('errorBox');
+    const successCard = document.getElementById('successCard');
+
+    function showError(msg) {
+      errorBox.textContent = msg;
+      errorBox.classList.add('show');
+    }
+    function clearError() {
+      errorBox.classList.remove('show');
+      errorBox.textContent = '';
+    }
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      clearError();
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      btn.disabled = true;
+      btnLabel.textContent = 'Sending…';
+
+      const data = new FormData(form);
+      data.append('Name', `${data.get('First Name')} ${data.get('Last Name')}`.trim());
+
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: data,
+          headers: { 'Accept': 'application/json' }
+        });
+        const json = await res.json().catch(() => ({}));
+
+        if (res.ok && (json.success === 'true' || json.success === true || res.status === 200)) {
+          form.style.display = 'none';
+          successCard.classList.add('show');
+        } else {
+          throw new Error(json.message || 'Submission failed.');
+        }
+      } catch (err) {
+        showError('Something went wrong sending your RSVP. Please try again, or email jberger@push.agency directly.');
+        btn.disabled = false;
+        btnLabel.textContent = 'Confirm My Attendance';
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>
